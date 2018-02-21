@@ -1,0 +1,349 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8" />
+    <title>Calculator</title>
+    <script src="https://unpkg.com/react@16/umd/react.development.js"></script>
+    <script src="https://unpkg.com/react-dom@16/umd/react-dom.development.js"></script>
+    <script src="https://unpkg.com/babel-standalone@6.15.0/babel.min.js"></script>
+  </head>
+  <style>
+    body {
+    font: 14px "Century Gothic", Futura, sans-serif;
+    margin: 20px;
+    }
+
+    ol, ul {
+      padding-left: 30px;
+    }
+
+    .calc-row:after, .display-row:after {
+      clear: both;
+      content: "";
+      display: table;
+    }
+
+    .title {
+      margin-bottom: 10px;
+    }
+
+    .calculator {
+      padding: 8px;
+      border: 1px solid #999;
+      width:133px;
+      background-color: #0e2749;
+
+    }
+
+    .num, .op, .display, .dec{
+      background-color: #ebebeb;
+      border: 1px solid #999;
+      border-radius:5px;
+      float: left;
+      font-size: 24px;
+      font-weight: bold;
+      line-height: 34px;
+      height: 34px;
+      margin-right: -1px;
+      margin-top: -1px;
+      padding: 0;
+      text-align: center;
+      width: 34px;
+    }
+
+    .num:hover, .op:hover, .dec:hover, .reset:hover {
+      background-color: #898989;
+      
+    }
+
+    .num:active, .op:active, .dec:active, .reset:active {
+      transform: translateY(3px);
+    }
+    .reset {
+      width:100px;
+      border: 1px solid #999;
+      text-align: center;
+      margin-top: 20px;
+    }
+
+    .display {
+      width: 133px;
+      text-align: right;
+      padding-right: 5px;
+      margin-bottom:5px;
+      background-color: #fff
+    }
+    </style>
+
+  <body>
+    <div id="root"></div>
+    <script type="text/babel">
+
+    class Num extends React.Component {
+      render() {
+        return (
+        <button className="num" onClick={() => this.props.onClick()}>
+          {this.props.value}
+        </button>
+        );
+      }
+    }
+
+    class Op extends React.Component {
+        render() {
+          return (
+          <button className="op" onClick={() => this.props.onClick()}>
+            {this.props.value}
+          </button>
+          );
+        }
+      }
+
+    class Equal extends React.Component {
+        render() {
+          return (
+          <button className= "op" onClick={() => this.props.onClick()}>
+            {this.props.value}
+          </button>
+          );
+        }
+      }
+
+    class Dec extends React.Component {
+        render() {
+          return (
+          <button className= "dec" onClick={() => this.props.onClick()}>
+            {this.props.value}
+          </button>
+          );
+        }
+      }
+
+    class Display extends React.Component {
+      render() {
+        return (
+        <button className="display">
+          {this.props.value}
+        </button>
+        );
+      }
+    }
+
+    class Reset extends React.Component {
+        render() {
+          return (
+          <button className= "reset" onClick={() => this.props.onClick()}>
+            {this.props.value}
+          </button>
+          );
+        }
+      }
+
+    class Calc extends React.Component {
+      constructor(props) {
+        super(props);
+        this.state = {
+        buttons: [
+          1, 2, 3, "+",
+          4, 5, 6, "-",
+          7, 8, 9, "*",
+          ".", 0,"=","/",
+          "Reset"],
+        display: 0,
+        };
+        this.memory = ""
+        this.current = ""
+        this.oper = 0
+        this.max = 8
+        this.wait = true
+      }
+
+      evaluateAnswer(){
+    
+        if(this.oper == "+"){
+            this.memory = Number(this.memory) + Number(this.current);
+        }
+        if (this.oper == "-"){
+            this.memory = Number(this.memory) - Number(this.current);
+        }
+        if (this.oper == "*"){
+            this.memory = Number(this.memory) * Number(this.current);
+        }
+        if (this.oper == "/"){
+            if (this.current != "0"){
+                this.memory = Number(this.memory) / Number(this.current);
+            }
+            else if (this.current == "0"){
+                alert("Cannot divide by 0");
+                this.memory = "";
+                this.setState({display: 0})    
+            }
+        }
+        
+        var x = String(this.memory).includes(".");
+        if (x == true){
+          this.memory = this.memory.toFixed(6);
+        }
+        
+        if (String(this.memory).length > this.max) {
+          alert("Error: Too many digits in memory")
+          this.reset()
+        }
+        else{
+          this.setState({display: this.memory});
+          this.current = this.memory;
+          this.memory = "";
+        }
+
+      }
+
+      operate(i){
+        var c;
+        c = this.state.buttons[i];
+        this.setState({display: c});
+        if (this.memory != ""){
+            this.evaluateAnswer();
+        }
+        this.oper = c;
+        this.memory = this.current;
+        this.current = "";
+              }
+      
+      decimal(){
+        if(String(this.current).indexOf(".") == -1){
+          this.current+=".";
+          this.setState({display: this.current});
+        }
+
+      }
+      handleClick() {
+          if (i == "+" || i == "-" || i == "*" || i == "/"){
+          
+          }
+          this.setState({display: this.current});
+          if (i == "+" || i == "-" || i == "*" || i == "/"){
+            operate(i);
+          }
+        
+      }
+      addValue(i){
+        if (this.current.length > this.max){
+          alert("Error: Too many digits")
+        }
+        else {
+          var c;
+          c = this.state.buttons[i]
+          this.current += String(c);
+          this.setState({display: this.current});
+        }
+      }
+      
+      reset() {
+        this.setState({display: 0});
+        this.memory = "";
+        this.current = "";
+        this.oper = 0;
+
+      }
+      renderNum(i) {
+        return <Num 
+          value={this.state.buttons[i]}
+          onClick={() => this.addValue(i)} 
+        />;
+      }
+
+      renderOp(i) {
+        return <Op 
+          value={this.state.buttons[i]}
+          onClick={() => this.operate(i)}
+        />;
+      }
+
+      renderDec(i) {
+        return <Dec 
+          value={this.state.buttons[i]}
+          onClick={() => this.decimal()}
+        />;
+
+      }
+      renderEqual(i) {
+        return <Equal
+          value={this.state.buttons[i]}
+          onClick={() => this.evaluateAnswer()}
+        />;
+      }
+
+      renderDisplay(i) {
+        return <Display value ={this.state.display}/>;
+      }
+
+      renderReset(i) {
+        return <Reset
+          value={this.state.buttons[i]}
+          onClick={() => this.reset()}
+        />;
+      }
+
+      render() {
+        const title = 'Calculator';
+
+        return (
+          <div>
+            <div className="title">{title}</div>
+            <div className="calculator">
+              <div className ="display-row">
+                {this.renderDisplay()}
+              </div>
+              <div className="calc-row">
+                {this.renderNum(0)}
+                {this.renderNum(1)}
+                {this.renderNum(2)}
+                {this.renderOp(3)}
+              </div>
+              <div className="calc-row">
+                {this.renderNum(4)}
+                {this.renderNum(5)}
+                {this.renderNum(6)}
+                {this.renderOp(7)}
+              </div>
+              <div className="calc-row">
+                {this.renderNum(8)}
+                {this.renderNum(9)}
+                {this.renderNum(10)}
+                {this.renderOp(11)}
+              </div>
+              <div className="calc-row">
+                {this.renderDec(12)}
+                {this.renderNum(13)}
+                {this.renderEqual(14)}
+                {this.renderOp(15)}
+              </div>
+            </div>
+            <div>
+                {this.renderReset(16)}
+            </div>
+          </div>
+          
+        );
+      }
+    }
+    ReactDOM.render(
+        <Calc />,
+        document.getElementById('root')
+      );
+
+    </script>
+    <!--
+      Note: this page is a great way to try React but it's not suitable for production.
+      It slowly compiles JSX with Babel in the browser and uses a large development build of React.
+
+      To set up a production-ready React build environment, follow these instructions:
+      * https://reactjs.org/docs/add-react-to-a-new-app.html
+      * https://reactjs.org/docs/add-react-to-an-existing-app.html
+
+      You can also use React without JSX, in which case you can remove Babel:
+      * https://reactjs.org/docs/react-without-jsx.html
+      * https://reactjs.org/docs/cdn-links.html
+    -->
+  </body>
+</html>
